@@ -7,6 +7,7 @@ phases:
       golang: latest
     commands:
       - go version
+      - go get github.com/aws/aws-sdk-go
       - go mod download github.com/aws/aws-sdk-go
       - go get github.com/aws/aws-sdk-go/aws/awsutil@v1.55.5
       - go mod download github.com/stretchr/testify
