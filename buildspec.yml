@@ -1,0 +1,37 @@
+# buildspec.yml
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      golang: latest
+    commands:
+      - go version
+      - go mod download github.com/aws/aws-sdk-go
+      - go get github.com/aws/aws-sdk-go/aws/awsutil@v1.55.5
+      - go mod download github.com/stretchr/testify
+      - go get github.com/stretchr/testify/assert@v1.10.0
+      - go mod download github.com/jarcoal/httpmock
+
+  pre_build:
+    commands:
+
+  build:
+    commands:
+      - go test -v
+
+  post_build:
+    commands:
+      - echo Build completed
+
+reports:
+  go-tests:
+    files:
+      - "**/*_test.go"
+    base-directory: .
+    file-format: GoTestReport
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: .
