@@ -189,3 +189,4 @@ func TestS3PreSignedURLWithCustomHeaders(t *testing.T) {
     defer resp.Body.Close()
 
     assert.Equal(t, 200, resp.StatusCode)
+}
