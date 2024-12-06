@@ -17,6 +17,15 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
+// customHTTPClient wraps httpmock's transport to be compatible with aws-sdk-go
+type customHTTPClient struct {
+	*http.Client
+}
+
+func (c *customHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	return httpmock.DefaultTransport.RoundTrip(req)
+}
+
 func TestSimpleS3WithMock(t *testing.T) {
         // Enable httpmock
 	httpmock.Activate()
@@ -108,8 +117,8 @@ func TestS3FromAIMock(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 
 	// Create a custom HTTP client that uses httpmock
-	httpClient := &http.Client{
-		Transport: httpmock.DefaultTransport,
+	httpClient := &customHTTPClient{
+		Client: &http.Client{},
 	}
 	
 	// Create a new AWS session
