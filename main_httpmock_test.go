@@ -110,6 +110,11 @@ func TestS3FromAIMock(t *testing.T) {
 	// Create a new AWS session
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2"),
+		Credentials: credentials.NewStaticCredentials(
+            		"AKIAIOSFODNN7EXAMPLE",
+            		"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+           		 "",
+        	),
 	})
 	if err != nil {
 		t.Fatalf("Error creating session: %v", err)
@@ -194,8 +199,8 @@ func TestS3PreSignedURLWithMock(t *testing.T) {
 
     // Register mock response for GetObject
 			   // `=~^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/test-object.*`
-    // httpmock.RegisterResponder("GET", regexp.MustCompile(`^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/.*$`),
-	httpmock.RegisterRegexpResponder("GET", regexp.MustCompile(`^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/.*$`),
+    httpmock.RegisterResponder("GET", `=~^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/test-object.*`,
+	// httpmock.RegisterRegexpResponder("GET", regexp.MustCompile(`^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/.*$`),
         func(req *http.Request) (*http.Response, error) {
             // Verify request has required presigned URL components
             query := req.URL.Query()
