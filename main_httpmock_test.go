@@ -49,7 +49,7 @@ func TestSimpleS3WithMock1(t *testing.T) {
         	),
 	})
 	if err != nil {
-		t.Logf("Error creating session: %v", err)
+		t.Fatalf("Error creating session: %v", err)
 		return
 	}
 
@@ -66,7 +66,7 @@ func TestSimpleS3WithMock1(t *testing.T) {
 		Key:    aws.String(item),
 	})
 	if err != nil {
-		t.Logf("Error getting object: %v", err)
+		t.Fatalf("Error getting object: %v", err)
 		return
 	}
 	defer result.Body.Close()
@@ -74,7 +74,7 @@ func TestSimpleS3WithMock1(t *testing.T) {
 	// Read the S3 object content
 	content, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		t.Logf("Error reading content: %v", err)
+		t.Fatalf("Error reading content: %v", err)
 		return
 	}
 
