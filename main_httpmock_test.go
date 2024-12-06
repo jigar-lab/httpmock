@@ -22,7 +22,7 @@ func TestSimpleS3WithMock1(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 
 	// Mock S3 GetObject API call
-	httpmock.RegisterResponder("GET", "https://s3.us-west-2.amazonaws.com/",
+	httpmock.RegisterResponder("GET", "https://s3.us-east-1.amazonaws.com/",
 		func(req *http.Request) (*http.Response, error) {
 			// Check if this is a GetObject request
 			if req.URL.Path == "/my-bucket/my-file.txt" {
@@ -40,7 +40,7 @@ func TestSimpleS3WithMock1(t *testing.T) {
 
 	// Create a new AWS session
 	sess, err := session.NewSession(&aws.Config{
-		Region:     aws.String("us-west-2"),
+		Region:     aws.String("us-east-1"),
 		DisableSSL: aws.Bool(true),
 		Credentials: credentials.NewStaticCredentials(
           		"AKIAIOSFODNN7EXAMPLE",
