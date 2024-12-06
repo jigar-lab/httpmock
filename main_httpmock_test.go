@@ -16,7 +16,7 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
-func simpleS3MockTest(t *testing.T) {
+func TestSimpleS3WithMock(t *testing.T) {
     // Enable httpmock
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
