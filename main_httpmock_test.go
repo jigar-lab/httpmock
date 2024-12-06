@@ -25,17 +25,12 @@ func TestSimpleS3WithMock1(t *testing.T) {
 	httpmock.RegisterResponder("GET", "http://my-bucket.s3.amazonaws.com/my-file.txt",
 		func(req *http.Request) (*http.Response, error) {
 			// Check if this is a GetObject request
-			if req.URL.Path == "/my-bucket/my-file.txt" {
-				resp := httpmock.NewBytesResponse(200, []byte("This is the mocked content of my-file.txt"))
+			resp := httpmock.NewBytesResponse(200, []byte("This is the mocked content of my-file.txt"))
 				resp.Header.Set("Content-Type", "text/plain")
 				resp.Header.Set("Content-Length", fmt.Sprintf("%d", len("This is the mocked content of my-file.txt")))
 				resp.Header.Set("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
 				resp.Header.Set("ETag", "\"d41d8cd98f00b204e9800998ecf8427e\"")
 				return resp, nil
-			}
-
-			// If not a GetObject request, return a 404
-			return httpmock.NewStringResponse(404, "Not Found"), nil
 		})
 
 	// Create a new AWS session
