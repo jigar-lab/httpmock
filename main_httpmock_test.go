@@ -65,10 +65,6 @@ func TestSimpleS3WithMock(t *testing.T) {
 	}
 
 	t.Logf("Content of %s/%s: %s\n", bucket, item, string(content))
-
-	// Print the response
-	t.Logf("Status: %d\n", result.StatusCode)
-	t.Logf("Body: %s\n", string(body))
 	
 	// Print stats
 	t.Logf("Calls made: %d\n", httpmock.GetTotalCallCount())
