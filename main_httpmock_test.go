@@ -16,6 +16,60 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
+func TestSimpleS3WithMock1(t *testing.T) {
+        // Enable httpmock
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	// Mock S3 GetObject API call
+	httpmock.RegisterResponder("GET", "https://s3.us-west-2.amazonaws.com/my-bucket/my-file.txt",
+		func(req *http.Request) (*http.Response, error) {
+			resp := httpmock.NewStringResponse(200, "This is the mocked content of my-file.txt")
+			resp.Header.Set("Content-Type", "text/plain")
+			return resp, nil
+		})
+
+	// Create a new AWS session
+	sess, err := session.NewSession(&aws.Config{
+		Region:     aws.String("us-west-2"),
+		DisableSSL: aws.Bool(true), // This is important for httpmock to work
+	})
+	if err != nil {
+		t.Logf("Error creating session: %v", err)
+		return
+	}
+
+	// Create S3 service client
+	svc := s3.New(sess)
+
+	// Specify the bucket and item key
+	bucket := "my-bucket"
+	item := "my-file.txt"
+
+	// Get the item from S3 (this will use the mocked response)
+	result, err := svc.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(item),
+	})
+	if err != nil {
+		t.Logf("Error getting object: %v", err)
+		return
+	}
+	defer result.Body.Close()
+
+	// Read the S3 object content
+	content, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		t.Logf("Error reading content: %v", err)
+		return
+	}
+
+	t.Logf("Content of %s/%s: %s\n", bucket, item, string(content))
+
+	// Print stats
+	t.Logf("Calls made: %d\n", httpmock.GetTotalCallCount())
+}	
+
 func TestSimpleS3WithMock(t *testing.T) {
     // Enable httpmock
 	httpmock.Activate()
