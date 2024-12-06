@@ -28,7 +28,7 @@ func simpleS3MockTest(t *testing.T) {
 	// Make a request to the mocked S3 endpoint
 	resp, err := http.Get("https://s3.amazonaws.com/my-bucket/my-file.txt")
 	if err != nil {
-		t.Logf("Error:", err)
+		t.Logf("Error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -36,7 +36,7 @@ func simpleS3MockTest(t *testing.T) {
 	// Read the response body
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		t.Logf("Error reading response:", err)
+		t.Logf("Error reading response: %v", err)
 		return
 	}
 
