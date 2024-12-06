@@ -23,27 +23,53 @@ func TestSimpleS3WithMock(t *testing.T) {
 
 	// Mock S3 GET request
 	httpmock.RegisterResponder("GET", "https://s3.amazonaws.com/my-bucket/my-file.txt",
-		httpmock.NewStringResponder(200, "This is the content of my-file.txt"))
+		func(req *http.Request) (*http.Response, error) {
+			resp := httpmock.NewStringResponse(200, "This is the mocked content of my-file.txt")
+			resp.Header.Set("Content-Type", "text/plain")
+			return resp, nil
+		})
 
-	// Make a request to the mocked S3 endpoint
-	resp, err := http.Get("https://s3.amazonaws.com/my-bucket/my-file.txt")
+	// Create a new AWS session
+	sess, err := session.NewSession(&aws.Config{
+		Region:     aws.String("us-west-2"),
+		DisableSSL: aws.Bool(true), // This is important for httpmock to work
+	})
 	if err != nil {
-		t.Logf("Error: %v", err)
+		t.Logf("Error creating session:", err)
 		return
 	}
-	defer resp.Body.Close()
 
-	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	// Create S3 service client
+	svc := s3.New(sess)
+
+	// Specify the bucket and item key
+	bucket := "my-bucket"
+	item := "my-file.txt"
+
+	// Get the item from S3 (this will use the mocked response)
+	result, err := svc.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(item),
+	})
 	if err != nil {
-		t.Logf("Error reading response: %v", err)
+		t.Logf("Error getting object:", err)
 		return
 	}
+	defer result.Body.Close()
+
+	// Read the S3 object content
+	content, err := ioutil.ReadAll(result.Body)
+	if err != nil {
+		fmt.Println("Error reading content:", err)
+		return
+	}
+
+	t.Logf("Content of %s/%s: %s\n", bucket, item, string(content))
 
 	// Print the response
-	t.Logf("Status: %d\n", resp.StatusCode)
+	t.Logf("Status: %d\n", result.StatusCode)
 	t.Logf("Body: %s\n", string(body))
-
+	
 	// Print stats
 	t.Logf("Calls made: %d\n", httpmock.GetTotalCallCount())
 }
