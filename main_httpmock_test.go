@@ -22,19 +22,28 @@ func TestSimpleS3WithMock1(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 
 	// Mock S3 GetObject API call
-	httpmock.RegisterResponder("GET", "https://s3.us-west-2.amazonaws.com/my-bucket/my-file.txt",
+	httpmock.RegisterResponder("GET", "https://s3.us-west-2.amazonaws.com/",
 		func(req *http.Request) (*http.Response, error) {
-			resp := httpmock.NewStringResponse(200, "This is the mocked content of my-file.txt")
-			resp.Header.Set("Content-Type", "text/plain")
-			return resp, nil
+			// Check if this is a GetObject request
+			if req.URL.Path == "/my-bucket/my-file.txt" {
+				resp := httpmock.NewBytesResponse(200, []byte("This is the mocked content of my-file.txt"))
+				resp.Header.Set("Content-Type", "text/plain")
+				resp.Header.Set("Content-Length", fmt.Sprintf("%d", len("This is the mocked content of my-file.txt")))
+				resp.Header.Set("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
+				resp.Header.Set("ETag", "\"d41d8cd98f00b204e9800998ecf8427e\"")
+				return resp, nil
+			}
+
+			// If not a GetObject request, return a 404
+			return httpmock.NewStringResponse(404, "Not Found"), nil
 		})
 
 	// Create a new AWS session
 	sess, err := session.NewSession(&aws.Config{
 		Region:     aws.String("us-west-2"),
-		DisableSSL: aws.Bool(true), // This is important for httpmock to work
+		DisableSSL: aws.Bool(true),
 		Credentials: credentials.NewStaticCredentials(
-            		"AKIAIOSFODNN7EXAMPLE",
+          		"AKIAIOSFODNN7EXAMPLE",
             		"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
             		"",
         	),
