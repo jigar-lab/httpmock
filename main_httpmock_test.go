@@ -34,7 +34,7 @@ func TestSimpleS3WithMock(t *testing.T) {
 		})
 
 	// Make a request to the mocked S3 endpoint
-	resp, err := http.Get("https://my-bucket.s3.amazonaws.com/my-file.txt")
+	resp, err := http.Get("http://my-bucket.s3.amazonaws.com/my-file.txt")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 		return
