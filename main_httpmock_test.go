@@ -6,6 +6,7 @@ import (
     "net/http"
     "testing"
     "time"
+    "regexp"
 
     "io/ioutil"
     "github.com/aws/aws-sdk-go/aws"
