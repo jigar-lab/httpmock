@@ -22,7 +22,7 @@ func TestSimpleS3WithMock1(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 
 	// Mock S3 GetObject API call
-	httpmock.RegisterResponder("GET", "https://s3.us-east-1.amazonaws.com/",
+	httpmock.RegisterResponder("GET", "http://my-bucket.s3.amazonaws.com/my-file.txt",
 		func(req *http.Request) (*http.Response, error) {
 			// Check if this is a GetObject request
 			if req.URL.Path == "/my-bucket/my-file.txt" {
