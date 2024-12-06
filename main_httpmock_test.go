@@ -33,6 +33,11 @@ func TestSimpleS3WithMock1(t *testing.T) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:     aws.String("us-west-2"),
 		DisableSSL: aws.Bool(true), // This is important for httpmock to work
+		Credentials: credentials.NewStaticCredentials(
+            		"AKIAIOSFODNN7EXAMPLE",
+            		"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            		"",
+        	),
 	})
 	if err != nil {
 		t.Logf("Error creating session: %v", err)
@@ -87,6 +92,11 @@ func TestSimpleS3WithMock(t *testing.T) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:     aws.String("us-west-2"),
 		DisableSSL: aws.Bool(true), // This is important for httpmock to work
+		Credentials: credentials.NewStaticCredentials(
+          		"AKIAIOSFODNN7EXAMPLE",
+            		"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            		"",
+        	),
 	})
 	if err != nil {
 		t.Logf("Error creating session: %v", err)
