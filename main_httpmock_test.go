@@ -35,7 +35,7 @@ func TestSimpleS3WithMock(t *testing.T) {
 		DisableSSL: aws.Bool(true), // This is important for httpmock to work
 	})
 	if err != nil {
-		t.Logf("Error creating session:", err)
+		t.Logf("Error creating session: %v", err)
 		return
 	}
 
@@ -52,7 +52,7 @@ func TestSimpleS3WithMock(t *testing.T) {
 		Key:    aws.String(item),
 	})
 	if err != nil {
-		t.Logf("Error getting object:", err)
+		t.Logf("Error getting object: %v", err)
 		return
 	}
 	defer result.Body.Close()
@@ -60,7 +60,7 @@ func TestSimpleS3WithMock(t *testing.T) {
 	// Read the S3 object content
 	content, err := ioutil.ReadAll(result.Body)
 	if err != nil {
-		fmt.Println("Error reading content:", err)
+		t.Logf("Error reading content: %v", err)
 		return
 	}
 
