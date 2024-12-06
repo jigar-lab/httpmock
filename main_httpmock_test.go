@@ -56,6 +56,7 @@ func TestS3PreSignedURLWithMock(t *testing.T) {
     // Create session with mock credentials
     sess := session.Must(session.NewSession(&aws.Config{
         Region: aws.String("us-west-2"),
+	DisableSSL: aws.Bool(true),
         Credentials: credentials.NewStaticCredentials(
             "AKIAIOSFODNN7EXAMPLE",
             "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
