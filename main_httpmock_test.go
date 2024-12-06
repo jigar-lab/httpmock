@@ -15,6 +15,38 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
+func simpleS3MockTest(t *testing.T) {
+    // Enable httpmock
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	// Mock S3 GET request
+	httpmock.RegisterResponder("GET", "https://s3.amazonaws.com/my-bucket/my-file.txt",
+		httpmock.NewStringResponder(200, "This is the content of my-file.txt"))
+
+	// Make a request to the mocked S3 endpoint
+	resp, err := http.Get("https://s3.amazonaws.com/my-bucket/my-file.txt")
+	if err != nil {
+		t.Logf("Error:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Logf("Error reading response:", err)
+		return
+	}
+
+	// Print the response
+	t.Logf("Status: %d\n", resp.StatusCode)
+	t.Logf("Body: %s\n", string(body))
+
+	// Print stats
+	t.Logf("Calls made: %d\n", httpmock.GetTotalCallCount())
+}
+
 func TestS3PreSignedURLWithMock(t *testing.T) {
     // Enable httpmock
     httpmock.Activate()
