@@ -102,6 +102,77 @@ func TestSimpleS3WithMock(t *testing.T) {
 	// t.Logf("Calls made: %d\n", httpmock.GetTotalCallCount())
 }	
 
+func TestS3FromAIMock(t *testing.T) {
+    	// Enable httpmock
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	// Create a new AWS session
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2"),
+	})
+	if err != nil {
+		t.Fatalf("Error creating session: %v", err)
+		return
+	}
+
+	// Create S3 service client
+	svc := s3.New(sess)
+
+	// Specify the bucket and item key
+	bucket := "test-bucket"
+	key := "my-file.txt"
+
+	// Create a GetObject request
+	req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+
+	// Create pre-signed URL with 15-minute expiration
+	url, err := req.Presign(15 * time.Minute)
+	if err != nil {
+		t.Fatalf("Error pre-signing request: %v", err)
+		return
+	}
+
+	t.Logf("Pre-signed URL: %s", url)
+
+	// Mock S3 GET request using regex
+	httpmock.RegisterRegexpResponder("GET", regexp.MustCompile(`^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/.*`),
+		func(req *http.Request) (*http.Response, error) {
+			content := fmt.Sprintf("This is the mocked content")
+			resp := httpmock.NewBytesResponse(200, []byte(content))
+			resp.Header.Set("Content-Type", "text/plain")
+			resp.Header.Set("Content-Length", fmt.Sprintf("%d", len(content)))
+			resp.Header.Set("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT")
+			resp.Header.Set("ETag", "\"d41d8cd98f00b204e9800998ecf8427e\"")
+			return resp, nil
+		})
+
+	// Make a request to the pre-signed URL
+	resp, err := http.Get(url)
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Error reading response: %v", err)
+		return
+	}
+
+	// Print the response
+	t.Logf("Status: %d\n", resp.StatusCode)
+	t.Logf("Body: %s\n", string(body))
+
+	// Print stats
+	t.Logf("Calls made: %d\n", httpmock.GetTotalCallCount())	
+}	
+
 func TestS3PreSignedURLWithMock(t *testing.T) {
     // Enable httpmock
     httpmock.Activate()
