@@ -116,15 +116,15 @@ func TestS3FromAIMock(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	// Create a custom HTTP client that uses httpmock
-	httpClient := &customHTTPClient{
-		Client: &http.Client{},
-	}
+	// // Create a custom HTTP client that uses httpmock
+	// httpClient := &customHTTPClient{
+	// 	Client: &http.Client{},
+	// }
 	
 	// Create a new AWS session
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2"),
-		HTTPClient: httpClient,
+		// HTTPClient: httpClient,
 		Credentials: credentials.NewStaticCredentials(
             		"AKIAIOSFODNN7EXAMPLE",
             		"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
@@ -171,7 +171,7 @@ func TestS3FromAIMock(t *testing.T) {
 		})
 
 	// Make a request to the pre-signed URL
-	resp, err := httpClient.Get(url)
+	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 		return
