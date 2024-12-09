@@ -9,15 +9,13 @@ phases:
       - echo $HTTP_PROXY
       - echo $HTTPS_PROXY
       - go version
-      # - go get github.com/aws/aws-sdk-go
-      # - go mod tidy
-      # - go mod download github.com/aws/aws-sdk-go
-      # - go get github.com/aws/aws-sdk-go/aws/awsutil@v1.55.5
-      # - go mod download github.com/stretchr/testify
-      # - go get github.com/stretchr/testify/assert@v1.10.0
-      # - go mod download github.com/jarcoal/httpmock
-      - go get -t httpmock
-      - go get -t testify
+      - go get github.com/aws/aws-sdk-go
+      - go mod tidy
+      - go mod download github.com/aws/aws-sdk-go
+      - go get github.com/aws/aws-sdk-go/aws/awsutil@v1.55.5
+      - go mod download github.com/stretchr/testify
+      - go get github.com/stretchr/testify/assert@v1.10.0
+      - go mod download github.com/jarcoal/httpmock
 
   pre_build:
     commands:
