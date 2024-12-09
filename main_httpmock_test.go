@@ -201,7 +201,6 @@ func TestS3PreSignedURLWithMock(t *testing.T) {
     // Create session with mock credentials
     sess := session.Must(session.NewSession(&aws.Config{
         Region: aws.String("us-west-2"),
-	DisableSSL: aws.Bool(true),
         Credentials: credentials.NewStaticCredentials(
             "AKIAIOSFODNN7EXAMPLE",
             "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
@@ -213,9 +212,7 @@ func TestS3PreSignedURLWithMock(t *testing.T) {
     svc := s3.New(sess)
 
     // Register mock response for GetObject
-			   // `=~^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/test-object.*`
     httpmock.RegisterResponder("GET", `=~^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/test-object.*`,
-	// httpmock.RegisterRegexpResponder("GET", regexp.MustCompile(`^https://test-bucket\.s3\.us-west-2\.amazonaws\.com/.*$`),
         func(req *http.Request) (*http.Response, error) {
             // Verify request has required presigned URL components
             query := req.URL.Query()
@@ -274,6 +271,7 @@ func TestS3PreSignedURLWithMock(t *testing.T) {
     // Verify mock was called
     assert.Equal(t, 1, httpmock.GetTotalCallCount())
 }
+
 
 // Test with expired URL
 func TestS3PreSignedURLExpired(t *testing.T) {
