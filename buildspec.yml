@@ -6,9 +6,9 @@ phases:
     runtime-versions:
       golang: 1.19
     commands:
-      # - echo $HTTP_PROXY
-      # - echo $HTTPS_PROXY
-      # - go version
+      - echo $HTTP_PROXY
+      - echo $HTTPS_PROXY
+      - go version
       # - go get github.com/aws/aws-sdk-go
       # - go mod tidy
       # - go mod download github.com/aws/aws-sdk-go
