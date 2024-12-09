@@ -16,6 +16,8 @@ phases:
       # - go mod download github.com/stretchr/testify
       # - go get github.com/stretchr/testify/assert@v1.10.0
       # - go mod download github.com/jarcoal/httpmock
+      - go get -t httpmock
+      - go get -t testify
 
   pre_build:
     commands:
